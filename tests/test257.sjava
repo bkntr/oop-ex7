@@ -1,0 +1,6 @@
+double a = foo("Hi");
+int foo(String s) {
+
+return 8;
+
+}

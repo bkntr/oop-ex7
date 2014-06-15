@@ -1,0 +1,5 @@
+int[] foo(){
+int[] b = {9};
+int a = b[9];
+return {a,56};
+}

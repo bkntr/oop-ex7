@@ -1,0 +1,7 @@
+double foo(int a){
+return goo()        +3;
+}
+
+double goo(){
+return 7.2;
+}

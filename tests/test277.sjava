@@ -1,0 +1,2 @@
+int a = 5;// I am a comment that comes after a member definition
+int b = a;

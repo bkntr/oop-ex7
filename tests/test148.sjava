@@ -1,0 +1,7 @@
+int foo(int a){
+return goo()        +3;
+}
+
+void goo(){
+return ;
+}

@@ -1,0 +1,18 @@
+int a() {
+
+return 9;
+
+}
+
+double b() {
+
+int a = 9;
+
+double f = 6.2;
+
+return a;
+
+}
+
+int c = a();
+double d = b();

@@ -1,0 +1,4 @@
+char b = '9';
+double foo(int a){
+return 		-a        *   	b;
+}

@@ -1,0 +1,8 @@
+String foo(String a, boolean b, int c, char d) {
+
+	return a;
+
+}
+
+
+foo("Hello",0,'a');

@@ -1,0 +1,10 @@
+void foo() {
+boolean b = true;
+while (boo()) {
+}
+return;
+}
+
+String boo() {
+return "";
+}

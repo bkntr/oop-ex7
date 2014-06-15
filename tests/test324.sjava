@@ -1,0 +1,7 @@
+String[] a = {"true"};
+String foo() {
+if (a[0]){
+}
+return "Hello";
+}
+

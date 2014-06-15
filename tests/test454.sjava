@@ -1,0 +1,9 @@
+String foo(String[] a, boolean b, int c, char d) {
+
+	a = "9";
+	return a;
+
+}
+
+
+foo("Hello",0,'a');

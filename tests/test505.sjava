@@ -1,0 +1,26 @@
+boolean a = true;
+
+
+void foo() {
+
+	while(true) {
+
+		if (true) {
+
+			if(false) {
+
+				while(a) {
+
+					char p;
+
+				}
+
+			}
+
+		}
+
+	}
+
+	return;
+
+}

@@ -1,0 +1,10 @@
+void foo(int a) {
+if (true) {
+while (true) {
+int b = 0;
+foo2(b);
+}
+}
+return;
+}boolean foo2(int b) {
+return 9;

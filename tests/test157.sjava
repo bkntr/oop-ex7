@@ -1,0 +1,7 @@
+int foo(int a){
+return goo()        +3;
+}
+
+int goo(){
+return 9;
+}

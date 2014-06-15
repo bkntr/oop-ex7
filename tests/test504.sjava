@@ -1,0 +1,34 @@
+// comment
+
+
+int[] foo() {
+
+	while(true) {
+
+		if (boo(1,2,3,"S")) {
+
+			doo();
+
+		}
+
+	}
+
+
+	return {6,8};
+
+}
+
+boolean boo(int a, int b, int c1, String d) {
+
+	char e = c;
+
+	return true;
+
+} 
+
+
+void doo(int a1, int a2) {
+
+	return;
+
+}

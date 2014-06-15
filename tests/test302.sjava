@@ -1,0 +1,10 @@
+void foo() {
+if (false) {
+}
+return;
+}
+
+int boo() {
+return 1;
+}
+

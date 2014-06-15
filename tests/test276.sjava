@@ -1,0 +1,2 @@
+error;// I am a comment that comes after an error
+int a = 5;

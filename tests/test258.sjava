@@ -1,0 +1,8 @@
+double[] a = foo("Hi");
+int foo(String s) {
+return goo();
+}
+
+int goo(){
+return 9;
+}

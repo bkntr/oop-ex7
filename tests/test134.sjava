@@ -1,0 +1,4 @@
+int b = 0;
+double[] foo()	{
+return {b};
+}

@@ -1,0 +1,40 @@
+// some int member
+
+int a = 5;
+
+
+//Another int member
+
+int b = a;
+
+
+// now - a string member
+
+String s;
+
+
+void boo(int a, int b, String s) {
+
+	if (true) {
+
+		boo(1,2,"hello");
+
+		while (false) {
+
+			a = soo(true);
+
+		}
+
+	}
+	
+return;
+
+}
+
+
+int soo(boolean b) {
+
+	return 0;
+
+}
+
