@@ -1,9 +1,8 @@
-package Compiler;
+package oop.ex7.main;
 
-import Scope.BlockScope;
-import Scope.GlobalScope;
-import Scope.MethodScope;
-import jdk.nashorn.internal.ir.Block;
+import oop.ex7.scopes.BlockScope;
+import oop.ex7.scopes.GlobalScope;
+import oop.ex7.scopes.MethodScope;
 
 import java.io.File;
 import java.util.Scanner;

@@ -1,6 +1,4 @@
-package main;
-
-import Compiler.Compiler;
+package oop.ex7.main;
 
 import java.io.File;
 
