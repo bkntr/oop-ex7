@@ -14,9 +14,16 @@ import java.util.regex.Pattern;
  */
 public class Compiler {
 
+    private static final String DEFINE_METHOD_PATTERN = "[\\s]*(\\w)(\\[\\])?[\\s]*([A-Za-z]\\w*)[\\s]*\\((.*)\\)[\\s]*[{][\\s]*\n";
+    private static final String DEFINE_VARIABLE_PATTERN = "[\\s]*(\\w)(\\[\\])?[\\s]*([A-Za-z]\\w*)[\\s]*=?(.*)\n";
+    private static final String DEFINE_BLOCK_PATTERN = "[\\s]*(if|while)[\\s]*\\(.*\\)[\\s]*[{][\\s]*\n";
+    private static final String CALL_METHOD_PATTERN = "[\\s]*((.*)=)*[\\s]*([A-Za-z]\\w*)[\\s]*\\((.*)\\)[\\s]*;[\\s]*\n";
+    private static final String SET_VALUE_PATTERN = "[\\s]*(\\w*)[\\s]*=(.*)\n";
+    private static final String CLOSE_SCOPE_PATTERN = ".*}.*\n";
+
     /**
-     * the function reads line from code file.
-     * checks they have basic legal syntax,
+     * the function reads lines from code file.
+     * check they have basic legal syntax,
      * classifies the lines to different expressions
      * @param sourceFile
      * @return
@@ -30,35 +37,25 @@ public class Compiler {
             nextLine = scanner.next();
 
             if (isLineLegal(nextLine)){
-                if (isDefineMethod(nextLine)){
+                if (nextLine.matches(DEFINE_METHOD_PATTERN){
                     currentScope = new MethodScope();
 
-                } else if (isBlock(nextLine)){
+                } else if (nextLine.matches(DEFINE_BLOCK_PATTERN){
                     currentScope = new BlockScope();
 
-                } else if (isDefineVariable(nextLine)){
+                } else if (nextLine.matches(DEFINE_VARIABLE_PATTERN)){
+                    
 
-                } else if (isCallFunction(nextLine)){
+                } else if (nextLine.matches(CALL_METHOD_PATTERN){
 
-                } else if (isSetValue(nextLine)){
+                } else if (nextLine.matches(SET_VALUE_PATTERN)){
 
-                }
-                if (isCloseScope(nextLine)){
+                } else if (nextLine.matches(CLOSE_SCOPE_PATTERN)){
                     currentScope.close();
                     currentScope = currentScope.getParent();
                 }
             }
         }
-    }
-
-    private static boolean isSetValue(String nextLine) {
-        Pattern SetValuePattern = Pattern.compile("[\s]*(\w*)[\s]*=(.*)");
-        Matcher SetValueMatcher = SetValuePattern.matcher(nextLine);
-
-        if (SetValueMatcher.matches()){
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -74,7 +71,7 @@ public class Compiler {
         // check if the line starts with '//' or have only spaces
         if (line.matches("//.*|\\s*")){
             return false;
-        // check if the line starts end with ';','{','}'
+        // check if the line ends with ';','{','}'
         } else if (line.matches(".*[;|{|}]\\s*")){
             return true;
         }
