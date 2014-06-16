@@ -34,4 +34,13 @@ public class GlobalScope extends Scope {
 
         return instance;
     }
+
+    public Variable getVariable(String name) {
+        Variable variable = variables.get(name);
+
+        // check if variable exists in variables
+        if (variable == null){
+            throw noSuchVariable();
+        }
+    }
 }
