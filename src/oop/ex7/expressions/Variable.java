@@ -3,27 +3,28 @@ package oop.ex7.expressions;
 /**
  * Created by Ben on 15/06/2014.
  */
-public abstract class Variable implements Expression {
+public class Variable extends Expression {
     private static final String NAME_PATTERN = "^[_a-zA-Z]\\w*$";
-    private String name;
     private boolean initialized;
 
-    public Variable(String name) throws BadNameException {
-        if (name.matches(NAME_PATTERN)) {
-            this.name = name;
-        } else {
+    public Variable(String name, ExpressionType type) throws BadNameException {
+        super(name, type);
+
+        if (!name.matches(NAME_PATTERN)) {
             throw new BadNameException();
         }
     }
 
-    public String getName() {
-        return name;
+    public Variable(String name) throws BadNameException {
+        this(name, ExpressionType.UNKNOWN);
     }
 
-    public abstract void setValue(String value) throws BadValueException;
+    public String getName() {
+        return getExpression();
+    }
 
-    public void setValue(Variable value) throws IncompatibleTypeException {
-        if (this.getClass().isInstance(value.getClass())) {
+    public void setValue(Expression value) throws IncompatibleTypeException {
+        if (this.getType().equals(value.getType())) {
             initialize();
         } else {
             throw new IncompatibleTypeException();

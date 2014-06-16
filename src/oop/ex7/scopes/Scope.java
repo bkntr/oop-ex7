@@ -1,5 +1,7 @@
 package oop.ex7.scopes;
 
+import oop.ex7.expressions.Variable;
+
 import java.util.Dictionary;
 
 /**
