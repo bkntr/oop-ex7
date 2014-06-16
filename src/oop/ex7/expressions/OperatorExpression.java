@@ -1,0 +1,14 @@
+package oop.ex7.expressions;
+
+/**
+ * Created by Ben on 15/06/2014.
+ */
+public class OperatorExpression implements Expression {
+    private Expression firstExp;
+    private Expression secondExp;
+
+    public OperatorExpression(Expression firstExp, Expression secondExp) {
+        this.firstExp = firstExp;
+        this.secondExp = secondExp;
+    }
+}
