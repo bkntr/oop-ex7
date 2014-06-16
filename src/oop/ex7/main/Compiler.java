@@ -1,6 +1,10 @@
 package oop.ex7.main;
 
 import com.sun.org.apache.xpath.internal.operations.Variable;
+import oop.ex7.expressions.BadNameException;
+import oop.ex7.expressions.Expression;
+import oop.ex7.expressions.ExpressionCreator;
+import oop.ex7.expressions.UnknownTypeException;
 import oop.ex7.scopes.BlockScope;
 import oop.ex7.scopes.GlobalScope;
 import oop.ex7.scopes.MethodScope;
@@ -32,6 +36,7 @@ public class Compiler {
     private static final String CLOSE_SCOPE_PATTERN = ".*}.*";
     private static final String RETURN_PATTERN =
             "[\\s]*return[\\s]*(?<value>.*);[\\s]*";
+
     /**
      * the function reads lines from code file.
      * check they have basic legal syntax,
@@ -39,22 +44,77 @@ public class Compiler {
      * @param sourceFile
      * @return
      */
-    public static boolean isCodeLegal(File sourceFile)
-            throws FileNotFoundException {
+    public static boolean compile(File sourceFile)
+            throws FileNotFoundException, BadNameException {
+
+        compileGlobalScope(sourceFile);
+        compileInnerScopes(sourceFile);
+
+        if (!GlobalScope.instance.isClosed()){
+            throw SKLKException;
+        }
+
+        // code is legal
+        return true;
+    }
+
+    private static void compileGlobalScope(File sourceFile) {
         Scanner scanner = new Scanner(sourceFile);
         Scope currentScope = new GlobalScope();
         String nextLine;
 
-        while (scanner.hasNext()){
+        while (scanner.hasNext()) {
             nextLine = scanner.next();
+            int nestedCount = 0;
+            Matcher enterScopePattern = Pattern.compile("{").matcher(nextLine);
+            Matcher exitScopePattern = Pattern.compile("}").matcher(nextLine);
 
-            if (!isLineLegal(nextLine)){
-                throw SemekException();
+            if (enterScopePattern.find()) {
+                nestedCount++;
+            } else if (exitScopePattern.find()) {
+                nestedCount--;
             }
 
-            MethodScope method = handleDefineMethod(nextLine, currentScope);
-            if (method != null){
-                currentScope = method;
+            // if the line is part of the global scope
+            if (nestedCount == 0) {
+                // if line is a comment or spaces only, ignore it
+                if (!handleLine(nextLine)){
+                    continue;
+                }
+
+                MethodScope method = handleDefineMethod(nextLine, currentScope);
+                if (method != null){
+                    currentScope = method;
+                    continue;
+                }
+
+                if (handleDefineVariable(nextLine, currentScope)){
+                    continue;
+                }
+
+                if (handleCallMethod(nextLine, currentScope)){
+                    continue;
+                }
+
+                throw illegalLineException();
+            }
+
+        }
+    }
+
+    private static void compileInnerScopes(File sourceFile) {
+        Scanner scanner = new Scanner(sourceFile);
+        Scope currentScope = new GlobalScope();
+        String nextLine;
+
+        while (scanner.hasNext()) {
+            nextLine = scanner.next();
+
+            if (!handleLine(nextLine)){
+                continue;
+            }
+
+            if (currentScope == GlobalScope.instance()) {
                 continue;
             }
 
@@ -83,20 +143,14 @@ public class Compiler {
             if (handleCloseScope(nextLine, currentScope)){
                 continue;
             }
+
+            throw illegalLineException();
         }
-
-        GlobalScope.checkFunctions();
-
-        if (!GlobalScope.instance.isClosed()){
-            throw SKLKException;
-        }
-
-        // code is legal
-        return true;
     }
 
+
     private static boolean handleSetValue(String nextLine,
-                                          Scope currentScope) {
+                                          Scope currentScope) throws BadNameException {
         Matcher matcher = Pattern.compile(SET_VALUE_PATTERN).matcher(nextLine);
 
         if (!matcher.matches()){
@@ -108,20 +162,22 @@ public class Compiler {
         String value = matcher.group("value");
         String index = matcher.group("index");
 
-        Variable variableValue = Expressions.ExpressionCreator.
-                createExpression(value);
+        Expression variableValue = ExpressionCreator.createExpression(value);
+        Expression index = ExpressionCreator.createExpression(index);
 
         if (index != null){
             currentScope.setArrayValue(name, index, variableValue);
-        } else {
-            currentScope.setValue(name, variableValue);
+        } else{
+                currentScope.setValue(name, variableValue);
+            }
         }
 
         return true;
     }
 
     private static boolean handleCallMethod(String nextLine,
-                                            Scope currentScope) {
+                                            Scope currentScope)
+            throws BadNameException {
         Matcher matcher = Pattern.compile(CALL_METHOD_PATTERN)
                 .matcher(nextLine);
 
@@ -129,7 +185,7 @@ public class Compiler {
             return false;
         }
 
-        Expression method = Expression.createExpression(nextLine);
+        Expression method = ExpressionCreator.createExpression(nextLine);
 
         // check method call is legal
         currentScope.callMethod(method);
@@ -138,7 +194,8 @@ public class Compiler {
     }
 
     private static boolean handleDefineVariable(String nextLine,
-                                                Scope currentScope) {
+                                                Scope currentScope)
+            throws UnknownTypeException, BadNameException {
         Matcher matcher = Pattern.compile(DEFINE_VARIABLE_PATTERN).
                 matcher(nextLine);
 
@@ -153,15 +210,14 @@ public class Compiler {
 
         // create new variable from the relevant type and add
         // it to the current scope
-        Variable variable =
-                VariableFactory.createVariable(type, name);
+        Expression variable = ExpressionCreator.createVariable(type, name);
         currentScope.addVariable(variable);
 
 
         // if while defining a variable the line also sets a
         // value, update it
         else if (value != null){
-            Expression value = Expression.createExpression(value);
+            Expression value = ExpressionCreator(value);
             currentScope.setValue(name, value);
         }
 
@@ -191,10 +247,10 @@ public class Compiler {
                 Expressions.ExpressionCreator.createExpression(condition);
 
         // create new scope of current block
-        BlockScope block = new BlockScope(condition);
+        BlockScope block = new BlockScope();
 
         // add block to scope
-        currentScope.addBlock(block);
+        currentScope.addBlock(condition);
 
         return block;
     }
@@ -213,23 +269,11 @@ public class Compiler {
             return null;
         }
 
-        // extract method name, return value type and parameters
-        String name = matcher.group("name");
-        String returnValueType = matcher.group("type");
-        String parameters = matcher.group("params");
-        String[] parametersSplit = parameters.replaceAll(" ","").split(",");
-
-        // create variables of the parameters
-        //TODO
-
-        // create variable of the return value type
-        Variable methodReturnValueType =
-                Expressions.VariableFactory.createVariable("returnValue",
-                                                        returnValueType);
+        // create method expression
+        Variable method = ExpressionCreator.createExpression(nextLine);
 
         // create new scope of the current method
-        MethodScope method = new MethodScope(name, methodReturnValueType,
-                parametersSplit);
+        MethodScope method = new MethodScope(method);
 
         // add method to current scope
         currentScope.addMethod(method);
@@ -248,7 +292,7 @@ public class Compiler {
      * ignored.
      * @throws illegalLineException if the line has illegal syntax
      */
-    private static boolean isLineLegal(String line)
+    private static boolean handleLine(String line)
             throws illegalLineException{
         // check if the line starts with '//' or have only spaces
         if (line.matches("//.*|\\s*")){
@@ -263,7 +307,7 @@ public class Compiler {
 
     }
 
-    private static boolean handleReturn(String nextLine, Scope currentScope) {
+    private static boolean handleReturn(String nextLine, Scope currentScope) throws BadNameException {
         Matcher matcher = Pattern.compile(RETURN_PATTERN).matcher(nextLine);
 
         if (!matcher.matches()) {

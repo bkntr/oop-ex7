@@ -8,6 +8,6 @@ import java.io.File;
 public class Sjavac {
     public static void main(String[] args[]){
         File sourceFile = new File(args[0]);
-        boolean returnValue = Compiler.isCodeLegal(sourceFile);
+        boolean returnValue = Compiler.compile(sourceFile);
     }
 }
