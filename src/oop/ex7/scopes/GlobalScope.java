@@ -1,12 +1,6 @@
 package oop.ex7.scopes;
 
-import oop.ex7.expressions.Expression;
-import oop.ex7.expressions.ExpressionType;
 import oop.ex7.expressions.MethodExpression;
-import oop.ex7.expressions.Variable;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**

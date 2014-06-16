@@ -97,7 +97,7 @@ public class ExpressionCreator {
     }
 
     private static Expression[] splitExpression(String expression)
-            throws BadNameException {
+            throws BadNameException, UnknownTypeException {
         ArrayList<Expression> expArray = new ArrayList<>();
         String[] values = expression.split(",", -1);
         for (String value: values) {
@@ -112,19 +112,14 @@ public class ExpressionCreator {
         switch (type) {
             case "int":
                 return ExpressionType.INT;
-                break;
             case "double":
                 return ExpressionType.DOUBLE;
-                break;
             case "String":
                 return ExpressionType.STRING;
-                break;
             case "boolean":
                 return ExpressionType.BOOLEAN;
-                break;
             case "char":
                 return ExpressionType.CHAR;
-                break;
             default:
                 throw new UnknownTypeException();
         }
