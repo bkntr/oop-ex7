@@ -137,7 +137,7 @@ public class Compiler {
 
     private static boolean handleSetValue(String nextLine,
                                           Scope currentScope)
-            throws BadNameException, UnknownTypeException {
+            throws CompilerException {
         Matcher matcher = Pattern.compile(SET_VALUE_PATTERN).matcher(nextLine);
 
         if (!matcher.matches()){
@@ -146,23 +146,23 @@ public class Compiler {
 
         // extract variable name and new value
         String name = matcher.group("name");
-        String value = matcher.group("value");
+        String valueString = matcher.group("value");
         String indexString = matcher.group("index");
 
-        Expression variableValue = ExpressionCreator.createExpression(value);
+        Expression value = ExpressionCreator.createExpression(valueString);
         Expression index = ExpressionCreator.createExpression(indexString);
 
         if (index != null){
-            currentScope.setArrayValue(name, index, variableValue);
+            currentScope.setArrayValue(name, index, value);
         } else {
-            currentScope.setValue(name, variableValue);
+            currentScope.setValue(name, value);
         }
 
         return true;
     }
 
     private static boolean handleCallMethod(String line, Scope currentScope)
-            throws BadNameException, UnknownTypeException {
+            throws CompilerException {
         if (!line.matches(CALL_METHOD_PATTERN)){
             return false;
         }
@@ -178,7 +178,7 @@ public class Compiler {
 
     private static boolean handleDefineVariable(String line,
                                                 Scope currentScope)
-            throws UnknownTypeException, BadNameException {
+            throws CompilerException {
         Matcher matcher = Pattern.compile(DEFINE_VARIABLE_PATTERN).
                 matcher(line);
 

@@ -5,5 +5,5 @@ import oop.ex7.CompilerException;
 /**
  * Created by nman on 6/17/14.
  */
-public class UnresolvedSymbolException extends CompilerException {
+public class IllegalParameterException extends CompilerException {
 }
